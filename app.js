@@ -1,9 +1,8 @@
 let kittens = []
 loadKittens()
 
-const defaultAffection = 5
-const defaultMood = "tolerant"
-let currentKitten = {}
+let defaultAffection = 5
+let defaultMood = "tolerant"
 
 
 
@@ -18,17 +17,34 @@ function addKitten(event) {
   event.preventDefault()
   let form = event.target
 
-let kitten = form.kitten.value
-
-currentKitten = kittens.find(kitten => kitten?.name == kitten)
-
-if(!currentKitten) {
-  currentKitten = {name: kitten, mood: defaultMood, affection: defaultAffection}
+let kitten = {
+  id: generateId(),
+  name: form.kitten.value,
+  mood: defaultMood,
+  affection: defaultAffection
 }
 
-console.log(currentKitten)
+// kitten = kittens.find(kitten => kitten?.name == kitten)
 
-kittens.push(currentKitten)
+if(!kitten) {
+  kitten = {
+    id: generateId(),
+    name: form.kitten.value,
+    mood: defaultMood,
+    affection: defaultAffection}
+}
+
+for (let index = 0; index < kittens.length; index++) {
+  const kitten = kittens[index];
+  if (form.kitten.value == kitten.name){
+    throw Error ("You can't have 2 Cats with the same name!")
+  } 
+}
+
+
+
+
+kittens.push(kitten)
 saveKittens()
 form.reset()
 }
@@ -49,7 +65,7 @@ function saveKittens() {
  */
 function loadKittens() {
   let storedKittens = JSON.parse(window.localStorage.getItem("kittens"))
-  //ANCHOR - Ask Thomas if this is an issue
+  
   if (storedKittens) {
     kittens = storedKittens
   }
@@ -59,34 +75,69 @@ function loadKittens() {
  * Draw all of the kittens to the kittens element
  */
 function drawKittens() {
+  let kittensElement = document.getElementById("kittens")
+  let kittensTemplate = ""
+  kittens.forEach(kitten => {
+    kittensTemplate += `
+      <button onclick="pet('${kitten.id}')">Pet</button>
+      <button onclick="catnip('${kitten.id}')">Catnip</button>
+      </div>
+        <div id="kitten-color" class="kitten tolerant">
+          <img src="https://placekitten.com/100/100">
+            <div>
+              <span>Name:</span>
+              <span id="kitten">"${kitten.name}"</span>
+            </div>
+            <div>
+              <span>Mood:</span>
+              <span id="mood">"${kitten.mood}"</span>
+            </div>
+            <span>Affection:${kitten.affection}</span>
+            <span id="affection"></span>
+        </div>
+        <div>
+        <button class="btn-cancel" type="button" onclick="removeKitten('${kitten.id}')">remove</button>
+        </div>
+    `
+  })
+  kittensElement.innerHTML = kittensTemplate
+
   let kittenElement = document.getElementById("kitten")
   let moodElement = document.getElementById("mood")
   let affectionElement = document.getElementById("affection")
   let kittenColorElement = document.getElementById("kitten-color")
 
-  kittenElement.innerText = currentKitten.name.toString()
-  moodElement.innerText = currentKitten.mood.toString()
-  affectionElement.innerText = currentKitten.affection.toString()
+  // kittenElement.innerText = currentKitten.toString()
+  // moodElement.innerText = currentKitten.mood.toString()
+  // affectionElement.innerText = currentKitten.affection.toString()
 
-if(currentKitten.affection > 5){
-  kittenColorElement?.classList.remove("tolerant", "angry")
-  kittenColorElement?.classList.add("happy")
-}
+// if(  > 5){
+//   kittenColorElement?.classList.remove("tolerant", "angry")
+//   kittenColorElement?.classList.add("happy")
+// }
 
-if(currentKitten.affection < 5){
+if(kitten.affection < 5){
   kittenColorElement?.classList.remove("tolerant", "happy")
   kittenColorElement?.classList.add("angry")
 }
 
-if(currentKitten.affection <= 0){
+if(kitten.affection <= 0){
   kittenColorElement?.classList.remove("tolerant", "happy", "angry")
   kittenColorElement?.classList.add("gone")
   let daButton = document.getElementById("pet-button")
-  
 }
 
 }
 
+
+function removeKitten(kittenId){
+  let index = kittens.findIndex(kittens => kittens.id == kittenId)
+  if (index == -1) {
+    throw new Error("Invalid Kitten")
+  }
+  kittens.splice(index, 1)
+  saveKittens()
+}
 
 /**
  * Find the kitten in the array by its id
@@ -94,6 +145,7 @@ if(currentKitten.affection <= 0){
  * @return {Kitten}
  */
 function findKittenById(id) {
+  return kittens.find(kittens => kittens.id == id)
 }
 
 
@@ -106,21 +158,22 @@ function findKittenById(id) {
  * @param {string} id 
  */
 function pet(id) {
+  let kitten = findKittenById(id)
   
   let i = Math.random()
   
   if(i > .5) {
-    currentKitten.affection ++
+    kitten.affection ++
   } else {
-    currentKitten.affection --
+    kitten.affection --
   }
 
-  if(currentKitten.affection > 5){
-    currentKitten.mood = "happy"
+  if(kitten.affection > 5){
+    kitten.mood = "happy"
   } 
 
-  if(currentKitten.affection < 5){
-    currentKitten.mood = "angry"
+  if(kitten.affection < 5){
+    kitten.mood = "angry"
   }
 
   saveKittens()
@@ -134,12 +187,13 @@ function pet(id) {
  * @param {string} id
  */
 function catnip(id) {
+  let kitten = findKittenById(id)
   let kittenColorElement = document.getElementById("kitten-color")
   for (let index = 0; index < kittens.length; index++) {
     const kitten = kittens[index];
-    if (kitten.name === currentKitten.name){
-      currentKitten.mood = "tolerant"
-      currentKitten.affection = 5
+    if (kitten.name === kitten.name){
+      kitten.mood = "tolerant"
+      kitten.affection = 5
       kittenColorElement?.classList.remove("tolerant", "happy", "angry", "gone")
   kittenColorElement?.classList.add("tolerant")
     }
@@ -154,12 +208,13 @@ function catnip(id) {
  * @param {Kitten} kitten 
  */
 function setKittenMood(kitten) {
-  if(currentKitten.affection = 5){
-    currentKitten.mood= "tolerant"
-  } else if (currentKitten.affection < 5){
-    currentKitten.mood= "angry"
-  } else if (currentKitten.affection > 5){
-    currentKitten.mood= "happy"
+  
+  if(kitten.affection = 5){
+    kitten.mood= "tolerant"
+  } else if (kitten.affection < 5){
+    kitten.mood= "angry"
+  } else if (kitten.affection > 5){
+    kitten.mood= "happy"
   }
 }
 
