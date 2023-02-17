@@ -79,10 +79,12 @@ function drawKittens() {
   let kittensTemplate = ""
   kittens.forEach(kitten => {
     kittensTemplate += `
-      <button onclick="pet('${kitten.id}')">Pet</button>
-      <button onclick="catnip('${kitten.id}')">Catnip</button>
+    <div>
+      <button class="m-1" onclick="pet('${kitten.id}')">Pet</button>
+      <button class="d-flex m-1" onclick="catnip('${kitten.id}')">Catnip</button>
+    </div>
       </div>
-        <div id="kitten-color" class="kitten tolerant">
+        <div id="kitten-color" class="kitten ${kitten.mood}">
           <img src="https://placekitten.com/100/100">
             <div>
               <span>Name:</span>
@@ -92,40 +94,43 @@ function drawKittens() {
               <span>Mood:</span>
               <span id="mood">"${kitten.mood}"</span>
             </div>
+            <div>
             <span>Affection:${kitten.affection}</span>
             <span id="affection"></span>
+            </div>
         </div>
         <div>
-        <button class="btn-cancel" type="button" onclick="removeKitten('${kitten.id}')">remove</button>
+        <button class="btn-cancel m-2" type="button" onclick="removeKitten('${kitten.id}')">remove</button>
         </div>
     `
   })
   kittensElement.innerHTML = kittensTemplate
 
-  let kittenElement = document.getElementById("kitten")
-  let moodElement = document.getElementById("mood")
-  let affectionElement = document.getElementById("affection")
-  let kittenColorElement = document.getElementById("kitten-color")
+  // let kittenElement = document.getElementById("kitten")
+  // let moodElement = document.getElementById("mood")
+  // let affectionElement = document.getElementById("affection")
+  // let kittenColorElement = document.getElementById("kitten-color")
 
   // kittenElement.innerText = currentKitten.toString()
   // moodElement.innerText = currentKitten.mood.toString()
   // affectionElement.innerText = currentKitten.affection.toString()
 
+  
 // if(  > 5){
 //   kittenColorElement?.classList.remove("tolerant", "angry")
 //   kittenColorElement?.classList.add("happy")
 // }
 
-if(kitten.affection < 5){
-  kittenColorElement?.classList.remove("tolerant", "happy")
-  kittenColorElement?.classList.add("angry")
-}
+// if(kitten.affection < 5){
+//   kittenColorElement?.classList.remove("tolerant", "happy")
+//   kittenColorElement?.classList.add("angry")
+// }
 
-if(kitten.affection <= 0){
-  kittenColorElement?.classList.remove("tolerant", "happy", "angry")
-  kittenColorElement?.classList.add("gone")
-  let daButton = document.getElementById("pet-button")
-}
+// if(kitten.affection <= 0){
+//   kittenColorElement?.classList.remove("tolerant", "happy", "angry")
+//   kittenColorElement?.classList.add("gone")
+//   let daButton = document.getElementById("pet-button")
+// }
 
 }
 
